@@ -7,7 +7,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 class MainPage(webapp.RequestHandler):
   def get(self):
       
-    url = "http://chart.apis.google.com/chart?cht=lc&chco=1E5692,3E9A3B&chs=200x125&chxt=x,y&chxl=0:|0|2|4|6|8|10|1:|2|4|6|8|10&chds=2,10&chd=t:"
+    url = "http://chart.apis.google.com/chart?cht=lxy&chco=1E5692,3E9A3B&chs=200x125&chxt=x,y&chxl=0:|0|2|4|6|8|10|1:|2|4|6|8|10&chds=0,10,2,10,0,10,2,10&chd=t:"
+
     self.response.headers['Content-Type'] = 'text/html'
     self.response.out.write('<html><body>')
     
@@ -32,7 +33,7 @@ class MainPage(webapp.RequestHandler):
          # Graph (Using Google Chart API)
          evector = ",".join([`result['evector_day' + suffix]` for suffix in ["0", "2", "4", "10"]])
          ppargox = ",".join([`result['ppargox_day' + suffix]` for suffix in ["0", "2", "4", "10"]])
-         graph = url + evector + "|" + ppargox
+         graph = url + "0,2,4,10|" + evector + "|0,2,4,10|" + ppargox
          self.response.out.write('<img src="%s">' % graph)
 
     self.response.out.write('<div><a href="search">Back</a></div>')
@@ -53,6 +54,9 @@ class IdSearchForm(webapp.RequestHandler):
           </form>
           <hr/>
           <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com
+          <div>
+            <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+          </div>
         </body>
       </html>""")
 
