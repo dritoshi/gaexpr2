@@ -142,7 +142,7 @@ class Coexpression(webapp.RequestHandler):
           coexpression_genes[subject_gene.affy_id] = [subject_gene.gene_symbol, cor]
         
       # too long...
-      result = "".join(['<tr><td>' + affy_id + '</td><td>' + data[0] + '</td><td>' + str(data[1]) + '</td></tr>' for affy_id, data in coexpression_genes.iteritems()])
+      result = "".join(['<tr><td><a href="/?search&keyword=' + affy_id + '">' + affy_id + '</a></td><td>' + data[0] + '</td><td>' + str(data[1]) + '</td></tr>' for affy_id, data in coexpression_genes.iteritems()])
     # End of calcation coexpression gene
 
 
@@ -153,6 +153,7 @@ class Coexpression(webapp.RequestHandler):
           <h1>Gene Expression Database</h1>
           """)
     self.response.out.write('<table>')
+    self.response.out.write('<tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>')
     self.response.out.write(result)
     self.response.out.write('</table>')
     self.response.out.write("""
