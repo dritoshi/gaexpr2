@@ -1,0 +1,12 @@
+application: gaexpr2
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /load
+  script: myloader.py
+  login: admin
+  
+- url: /.*
+  script: gaexpr2.py
