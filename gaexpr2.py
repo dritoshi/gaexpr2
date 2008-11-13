@@ -83,32 +83,27 @@ class Coexpression(webapp.RequestHandler):
     return covar
 
   def get(self):
-
     # Start of calcation coexpression gene
     # I use the webapp framework to retrieve the keyword
     keyword = self.request.get('keyword')
 
     if not keyword:
-      #self.response.out.write("No keyword has been set")
       result = "No keyword has been set"
     else:
       # Search the 'Expression' Entity based on our keyword
       # get log2 ratio expressions of target gene
-
       query = search.SearchableQuery('Expression')
       query.Search(keyword)
       for result in query.Run():
          target_gene_exprs = [result['ppargox_day' + suffix]-result['evector_day' + suffix] for suffix in ["0", "2", "4", "10"]]
 
-      # get log2 ratio expressions of subject genes
-      # I will separate Cor class following the code.
-      #coexpression_genes = {}
-      coexpression_genes = []
-
       target_mean       = self.mean(target_gene_exprs)
       target_deviations = self.deviations(target_gene_exprs, target_mean)
       target_sd         = self.sd(target_deviations)
 
+      # get log2 ratio expressions of subject genes
+      # I will separate Cor class following the code.
+      coexpression_genes = []
       subject_genes = db.GqlQuery("SELECT * FROM Expression")
       for subject_gene in subject_genes:
         # so bad code ;-)
