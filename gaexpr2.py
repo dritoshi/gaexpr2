@@ -39,20 +39,21 @@ class MainPage(webapp.RequestHandler):
       query = search.SearchableQuery('Expression')
       query.Search(keyword)
       for result in query.Run():
-         # Annotation
-         self.response.out.write('<div><pre>')
-         self.response.out.write('Affy ID: %s\n'     % result['affy_id'])
-         self.response.out.write('Gene Symbol: %s\n' % result['gene_symbol'])
-         self.response.out.write('Gene Name: %s\n'   % result['gene_name'])
-         self.response.out.write('Entrez Gene: <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=full_report&list_uids=%s">' % result['entrezid'] + "%s</a>\n" % result['entrezid'])
-         self.response.out.write('</pre></div>')
+        # Annotation
+        self.response.out.write('<div><pre>')
+        self.response.out.write('Affy ID: %s\n'     % result['affy_id'])
+        self.response.out.write('Gene Symbol: %s\n' % result['gene_symbol'])
+        self.response.out.write('Gene Name: %s\n'   % result['gene_name'])
+        self.response.out.write('Entrez Gene: <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=full_report&list_uids=%s">' % result['entrezid'] + "%s</a>\n" % result['entrezid'])
+        self.response.out.write('</pre></div>')
          
-         # Graph (Using Google Chart API)
-         evector = ",".join([str(result['evector_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
-         ppargox = ",".join([str(result['ppargox_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
-         graph = url + "0,2,4,10|" + evector + "|0,2,4,10|" + ppargox
-         self.response.out.write('<img src="%s">' % graph)
-    self.response.out.write('<div><a href="coexpression?keyword=%s">Search coexpression genes</a></div>' % result['affy_id'])
+        # Graph (Using Google Chart API)
+        evector = ",".join([str(result['evector_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
+        ppargox = ",".join([str(result['ppargox_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
+        graph = url + "0,2,4,10|" + evector + "|0,2,4,10|" + ppargox
+        self.response.out.write('<img src="%s">' % graph)
+        self.response.out.write('<div><a href="coexpression?keyword=%s">Search coexpression genes</a></div>' % result['affy_id'])
+
     self.response.out.write('<hr/><div><a href="search">Back</a></div>')
     self.response.out.write('</body></html>')
     
