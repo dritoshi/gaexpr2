@@ -48,8 +48,8 @@ class MainPage(webapp.RequestHandler):
          self.response.out.write('</pre></div>')
          
          # Graph (Using Google Chart API)
-         evector = ",".join([`result['evector_day' + suffix]` for suffix in ["0", "2", "4", "10"]])
-         ppargox = ",".join([`result['ppargox_day' + suffix]` for suffix in ["0", "2", "4", "10"]])
+         evector = ",".join([str(result['evector_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
+         ppargox = ",".join([str(result['ppargox_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
          graph = url + "0,2,4,10|" + evector + "|0,2,4,10|" + ppargox
          self.response.out.write('<img src="%s">' % graph)
     self.response.out.write('<div><a href="coexpression?keyword=%s">Search coexpression genes</a></div>' % result['affy_id'])
