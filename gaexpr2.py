@@ -1,10 +1,12 @@
 import math
 import wsgiref.handlers
+import os
 
 from google.appengine.ext import webapp
 from google.appengine.ext import search
 from google.appengine.ext import db
 from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.ext.webapp import template
 
 class Expression(db.Model):
   affy_id       = db.StringProperty()
@@ -26,58 +28,38 @@ class MainPage(webapp.RequestHandler):
       
     url = "http://chart.apis.google.com/chart?cht=lxy&chco=1E5692,3E9A3B&chs=200x125&chxt=x,y&chxl=0:|0|2|4|6|8|10|1:|2|4|6|8|10&chds=0,10,2,10,0,10,2,10&chd=t:"
 
-    self.response.headers['Content-Type'] = 'text/html'
-    self.response.out.write('<html><body>')
-    
     # I use the webapp framework to retrieve the keyword
     keyword = self.request.get('keyword')
 
     if not keyword:
-      self.response.out.write("No keyword has been set")
+      self.response.out.write("No keyword has been set.")
     else:
       # Search the 'Expression' Entity based on our keyword
       query = search.SearchableQuery('Expression')
       query.Search(keyword)
+      template_values = {}
       for result in query.Run():
-        # Annotation
-        self.response.out.write('<div><pre>')
-        self.response.out.write('Affy ID: %s\n'     % result['affy_id'])
-        self.response.out.write('Gene Symbol: %s\n' % result['gene_symbol'])
-        self.response.out.write('Gene Name: %s\n'   % result['gene_name'])
-        self.response.out.write('Entrez Gene: <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=full_report&list_uids=%s">' % result['entrezid'] + "%s</a>\n" % result['entrezid'])
-        self.response.out.write('</pre></div>')
-         
         # Graph (Using Google Chart API)
         evector = ",".join([str(result['evector_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
         ppargox = ",".join([str(result['ppargox_day' + suffix]) for suffix in ["0", "2", "4", "10"]])
         graph = url + "0,2,4,10|" + evector + "|0,2,4,10|" + ppargox
-        self.response.out.write('<img src="%s">' % graph)
-        self.response.out.write('<div><a href="coexpression?keyword=%s">Search coexpression genes</a></div>' % result['affy_id'])
 
-    self.response.out.write('<hr/><div><a href="search">Back</a></div>')
-    self.response.out.write('</body></html>')
+        template_values['affy_id']     = result['affy_id']
+        template_values['gene_symbol'] = result['gene_symbol']
+        template_values['gene_name']   = result['gene_name']
+        template_values['entrezid']    = result['entrezid']
+        template_values['graph']       = graph
+
+      path = os.path.join(os.path.dirname(__file__), 'index.html')
+      self.response.out.write(template.render(path, template_values))
+
     
 class IdSearchForm(webapp.RequestHandler):
   def get(self):
-    self.response.headers['Content-Type'] = 'text/html'
-    self.response.out.write("""
-      <html>
-        <body>
-          <h1>Gene Expression Database</h1>
-          <form action="/" method="get">
-            <div>
-              Keyword: <input type="text" name="keyword" rows="1" cols="12">
-              <input type="submit" value="Search"> (ex. 100005_at, Traf4)
-            </div>
-          </form>
-          <hr/>
-          <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com
-          <div>
-            <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
-          </div>
-        </body>
-      </html>""")
-
+    template_values = {}
+    path = os.path.join(os.path.dirname(__file__), 'search.html')
+    self.response.out.write(template.render(path, template_values))
+    
 class Coexpression(webapp.RequestHandler):
   def mean(self, exprs):
     mean = 0.0
@@ -120,7 +102,8 @@ class Coexpression(webapp.RequestHandler):
 
       # get log2 ratio expressions of subject genes
       # I will separate Cor class following the code.
-      coexpression_genes = {}
+      #coexpression_genes = {}
+      coexpression_genes = []
 
       target_mean       = self.mean(target_gene_exprs)
       target_deviations = self.deviations(target_gene_exprs, target_mean)
@@ -144,31 +127,12 @@ class Coexpression(webapp.RequestHandler):
 
         # filtering
         if math.fabs(cor) >= 0.9:
-          coexpression_genes[subject_gene.affy_id] = [subject_gene.gene_symbol, cor]
-        
-      # too long...
-      result = "".join(['<tr><td><a href="/?search&keyword=' + affy_id + '">' + affy_id + '</a></td><td>' + data[0] + '</td><td>' + str(data[1]) + '</td></tr>' for affy_id, data in coexpression_genes.iteritems()])
-    # End of calcation coexpression gene
+          coexpression_genes.append([subject_gene.affy_id, subject_gene.gene_symbol, cor])
 
-
-    # output html 
-    self.response.headers['Content-Type'] = 'text/html'
-    self.response.out.write('<html><body>')
-    self.response.out.write("""
-          <h1>Gene Expression Database</h1>
-          """)
-    self.response.out.write('<table>')
-    self.response.out.write('<tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>')
-    self.response.out.write(result)
-    self.response.out.write('</table>')
-    self.response.out.write("""
-          <hr/>
-          <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com
-          <div>
-            <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
-          </div>
-        </body>
-      </html>""")
+      template_values = {'coexpression_genes': coexpression_genes,
+                         'keyword': keyword}
+      path = os.path.join(os.path.dirname(__file__), 'coexpression.html')
+      self.response.out.write(template.render(path, template_values))
 
 
 application = webapp.WSGIApplication(
