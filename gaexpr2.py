@@ -79,6 +79,27 @@ class IdSearchForm(webapp.RequestHandler):
       </html>""")
 
 class Coexpression(webapp.RequestHandler):
+  def mean(self, exprs):
+    mean = 0.0
+    for expr in exprs:
+      mean += expr
+    return mean / len(exprs)
+
+  def sd(self, deviations):
+    sd = 0.0
+    for deviation in deviations:
+      sd += deviation**2
+    return math.sqrt(sd)
+
+  def deviations(self, exprs, mean):
+    return [expr - mean for expr in exprs]
+
+  def covariance(self, target_deviations, subject_deviations):
+    covar = 0.0
+    for target, subject in zip(target_deviations, subject_deviations):
+      covar += target * subject
+    return covar
+
   def get(self):
 
     # Start of calcation coexpression gene
@@ -91,54 +112,37 @@ class Coexpression(webapp.RequestHandler):
     else:
       # Search the 'Expression' Entity based on our keyword
       # get log2 ratio expressions of target gene
+
       query = search.SearchableQuery('Expression')
       query.Search(keyword)
       for result in query.Run():
-         target_gene_expr = [result['ppargox_day' + suffix]-result['evector_day' + suffix] for suffix in ["0", "2", "4", "10"]]
+         target_gene_exprs = [result['ppargox_day' + suffix]-result['evector_day' + suffix] for suffix in ["0", "2", "4", "10"]]
 
       # get log2 ratio expressions of subject genes
       # I will separate Cor class following the code.
       coexpression_genes = {}
+
+      target_mean       = self.mean(target_gene_exprs)
+      target_deviations = self.deviations(target_gene_exprs, target_mean)
+      target_sd         = self.sd(target_deviations)
+
       subject_genes = db.GqlQuery("SELECT * FROM Expression")
       for subject_gene in subject_genes:
         # so bad code ;-)
-        subject_gene_expr = [subject_gene.ppargox_day0  - subject_gene.evector_day0,
-                             subject_gene.ppargox_day2  - subject_gene.evector_day2,
-                             subject_gene.ppargox_day4  - subject_gene.evector_day4,
-                             subject_gene.ppargox_day10 - subject_gene.evector_day10]
+        subject_gene_exprs = [subject_gene.ppargox_day0  - subject_gene.evector_day0,
+                              subject_gene.ppargox_day2  - subject_gene.evector_day2,
+                              subject_gene.ppargox_day4  - subject_gene.evector_day4,
+                              subject_gene.ppargox_day10 - subject_gene.evector_day10]
 
         # calc corr.
-        # Bad code ;-) --- you must define mean and sd functions. ---
-        subject_mean = 0.0
-        target_mean  = 0.0
-        for expr in subject_gene_expr:
-          subject_mean += expr
-        subject_mean = subject_mean / len(subject_gene_expr)
+        subject_mean       = self.mean(subject_gene_exprs)
+        subject_deviations = self.deviations(subject_gene_exprs, subject_mean)
+        subject_sd         = self.sd(subject_deviations)
 
-        for expr in target_gene_expr:
-          target_mean += expr
-        target_mean = target_mean / len(target_gene_expr)
-
-        subject_deviations = [expr - subject_mean for expr in subject_gene_expr]
-        target_deviations  = [expr - target_mean  for expr in target_gene_expr]
-
-        subject_sd = 0.0
-        for deviation in subject_deviations:
-          subject_sd += deviation**2
-        subject_sd = math.sqrt(subject_sd)
-
-        target_sd  = 0.0
-        for deviation in target_deviations:
-          target_sd += deviation**2
-        target_sd = math.sqrt(target_sd)
-
-        # change code to zip() function.
-        covar = 0.0
-        for i in xrange(len(target_gene_expr)):
-          covar += (target_gene_expr[i] - target_mean) * (subject_gene_expr[i] - subject_mean)
-
+        covar = self.covariance(target_deviations, subject_deviations)
         cor = covar / (subject_sd * target_sd)
-        #self.response.out.write(cor)
+
+        # filtering
         if math.fabs(cor) >= 0.9:
           coexpression_genes[subject_gene.affy_id] = [subject_gene.gene_symbol, cor]
         
