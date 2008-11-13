@@ -6,9 +6,9 @@
     <tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>
     {% for gene in coexpression_genes %}
       <tr>
-      {% for value in gene %}
-        <td>{{ value }}</td>
-      {% endfor %}
+        <td><a href="/?search&keyword={{ gene.affy_id }}">{{ gene.affy_id }}</a></td>
+        <td>{{ gene.gene_symbol }}</td>
+        <td>{{ gene.cor }}</td>
       </tr>    
     {% endfor %}      
   </table>

@@ -102,11 +102,10 @@ class Coexpression(webapp.RequestHandler):
       target_sd         = self.sd(target_deviations)
 
       # get log2 ratio expressions of subject genes
-      # I will separate Cor class following the code.
       coexpression_genes = []
       subject_genes = db.GqlQuery("SELECT * FROM Expression")
       for subject_gene in subject_genes:
-        # so bad code ;-)
+        # bad code ;-)
         subject_gene_exprs = [subject_gene.ppargox_day0  - subject_gene.evector_day0,
                               subject_gene.ppargox_day2  - subject_gene.evector_day2,
                               subject_gene.ppargox_day4  - subject_gene.evector_day4,
@@ -122,7 +121,9 @@ class Coexpression(webapp.RequestHandler):
 
         # filtering
         if math.fabs(cor) >= 0.9:
-          coexpression_genes.append([subject_gene.affy_id, subject_gene.gene_symbol, cor])
+          coexpression_genes.append({'affy_id': subject_gene.affy_id,
+                                     'gene_symbol': subject_gene.gene_symbol,
+                                     'cor': cor})
 
       template_values = {'coexpression_genes': coexpression_genes,
                          'keyword': keyword}
