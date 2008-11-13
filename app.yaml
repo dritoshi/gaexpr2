@@ -4,9 +4,13 @@ runtime: python
 api_version: 1
 
 handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
 - url: /load
   script: myloader.py
   login: admin
-  
+
 - url: /.*
   script: gaexpr2.py
+

@@ -1,23 +1,59 @@
 <html>
+<head>
+  <meta http-equiv="Content-Language" content="English" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"
+media="screen" />
+</head>
 <body>
-  <h1>Gene Expression Database</h1>
-  <div>
-    <div><pre>
-Affy ID:     {{ affy_id }}
-Gene Symbol: {{ gene_symbol }}
-Gene Name:   {{ gene_name }}
-Entrez Gene: <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=full_report&list_uids={{ entrezid }}">{{ entrezid }}</a>
-    </pre></div>
-  </div>
-  
-  <div><img src="{{ graph }}"></div>
-  <div><a href="coexpression?keyword={{ affy_id }}">Search coexpression genes</a></div>
 
-  <div><a href="/search">Home</a></div>
-  <hr/>
-  <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com
-  <div>
-   <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+<div id="wrap">
+<div id="top"></div>
+<div id="content">
+
+<div class="header">
+  <h1>Gene Expression Database</h1>
+    <h2>on Google App Engine</h2>
+    </div>
+    
+    <div class="breadcrumbs">
+      <a href="/">Home</a> &middot; Gene
+      </div>
+  <div class="middle">  
+    <img src="{{ graph }}">
+    <div><a href="coexpression?keyword={{ affy_id }}">Search coexpressiongenes</a></div>
+    <div><a href="/search">Home</a></div>
   </div>
+
+
+<div class="right">
+<h2>Annotation</h2>
+<UL>
+<LI>Affy ID:     {{ affy_id }}
+<LI>Gene Symbol: {{ gene_symbol }}
+<LI>Gene Name:   {{ gene_name }}
+<LI>Entrez Gene: <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene&cmd=Retrieve&dopt=full_report&list_uids={{ entrezid }}">{{ entrezid }}</a>
+</UL>
+ </div>
+ 
+ <div id="clear"></div>
+ 
+ </div>
+ 
+ <div id="bottom"></div>
+ </div>
+ 
+ <div id="footer">
+   <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail
+dot com
+  <div>
+     <img
+src="http://code.google.com/appengine/images/appengine-silver-120x30.gif"
+alt="Powered by Google App Engine" />
+  </div>
+    CSS Design by <a href="http://www.minimalistic-design.net">Minimalistic
+Design</a>
+</div>
+
 </body>
 </html>

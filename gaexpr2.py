@@ -26,7 +26,7 @@ class Expression(db.Model):
 class MainPage(webapp.RequestHandler):
   def get(self):
       
-    url = "http://chart.apis.google.com/chart?cht=lxy&chco=1E5692,3E9A3B&chs=200x125&chxt=x,y&chxl=0:|0|2|4|6|8|10|1:|2|4|6|8|10&chds=0,10,2,10,0,10,2,10&chd=t:"
+    url = "http://chart.apis.google.com/chart?cht=lxy&chco=1E5692,3E9A3B&chs=300x225&chxt=x,y&chxl=0:|0|2|4|6|8|10|1:|2|4|6|8|10&chds=0,10,2,10,0,10,2,10&chd=t:"
 
     # I use the webapp framework to retrieve the keyword
     keyword = self.request.get('keyword')
