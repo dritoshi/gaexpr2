@@ -73,6 +73,12 @@ class Coexpression(webapp.RequestHandler):
   def covariance(self, target_deviations, subject_deviations):
     return sum([target * subject for target, subject in zip(target_deviations, subject_deviations)])
 
+  # def correlation_coefficient(self, target_exprs, subject_exprs):
+
+  # mutual information
+  def mutual_information(self, cor):
+    return -1/2 * math.log(1-cor**2)
+
   def get(self):
     # Start of calcation coexpression gene
     # I use the webapp framework to retrieve the keyword
@@ -111,10 +117,12 @@ class Coexpression(webapp.RequestHandler):
         cor = covar / (subject_sd * target_sd)
 
         # filtering
-        if math.fabs(cor) >= 0.9:
+        if math.fabs(cor) >= 0.9 and math.fabs(cor) < 1.0:
+          mutual_information = self.mutual_information(cor)
           coexpression_genes.append({'affy_id': subject_gene.affy_id,
                                      'gene_symbol': subject_gene.gene_symbol,
-                                     'cor': cor})
+                                     'cor': cor,
+                                     'mutual_information': mutual_information})
 
       template_values = {'coexpression_genes': coexpression_genes,
                          'keyword': keyword}

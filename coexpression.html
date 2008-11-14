@@ -22,12 +22,13 @@ media="screen" />
     
   <div class="middle"> 
   <table>
-    <tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>
+    <tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th><th>Mutual Information</th></tr>
     {% for gene in coexpression_genes %}
       <tr>
         <td><a href="/?search&keyword={{ gene.affy_id }}">{{ gene.affy_id }}</a></td>
         <td>{{ gene.gene_symbol }}</td>
         <td>{{ gene.cor }}</td>
+        <td>{{ gene.mutual_information }}</td>
       </tr>    
     {% endfor %}      
   </table>
