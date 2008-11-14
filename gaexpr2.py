@@ -62,25 +62,16 @@ class IdSearchForm(webapp.RequestHandler):
     
 class Coexpression(webapp.RequestHandler):
   def mean(self, exprs):
-    mean = 0.0
-    for expr in exprs:
-      mean += expr
-    return mean / len(exprs)
+    return sum(exprs) / len(exprs)
 
   def sd(self, deviations):
-    sd = 0.0
-    for deviation in deviations:
-      sd += deviation**2
-    return math.sqrt(sd)
+    return math.sqrt( sum([deviation**2 for deviation in deviations]) )
 
   def deviations(self, exprs, mean):
     return [expr - mean for expr in exprs]
 
   def covariance(self, target_deviations, subject_deviations):
-    covar = 0.0
-    for target, subject in zip(target_deviations, subject_deviations):
-      covar += target * subject
-    return covar
+    return sum([target * subject for target, subject in zip(target_deviations, subject_deviations)])
 
   def get(self):
     # Start of calcation coexpression gene
