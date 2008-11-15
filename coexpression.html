@@ -1,25 +1,9 @@
-<html>
-<head>
-  <meta http-equiv="Content-Language" content="English" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"
-media="screen" />
-</head>
-<body>
+{% extends "base.html" %}
 
-<div id="wrap">
-<div id="top"></div>
-<div id="content">
+{% block title %}Gene View{% endblock %}
+{% block pagename %}Coexpression View &middot; {{ keyword }} {% endblock %}
 
-  <div class="header">
-  <h1>Gene Expression Database</h1>
-  <h2>on Google App Engine</h2>
-  </div>
-    
-    <div class="breadcrumbs">
-      <a href="/search">Home</a> &middot; Coexpression
-    </div>
-    
+{% block middle %}
   <div class="middle"> 
   <table>
     <tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>
@@ -35,15 +19,9 @@ media="screen" />
   <div><a href="/?keyword={{keyword}}">Back to {{keyword}} page</a></div>
   <div><a href="/search">Home</a></div>
   </div>
+    
+{% endblock %}
 
-<div id="clear"></div>
-</div>
-<div id="bottom"></div>
-</div>
+{% block right %}
+{% endblock %}
 
-<div id="footer">
-  <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com                            
-  <div><img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" /></div>
-CSS Design by <a href="http://www.minimalistic-design.net">Minimalistic Design</a>
-</div>
-</body></html>   

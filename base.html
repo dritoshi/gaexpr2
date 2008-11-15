@@ -1,0 +1,46 @@
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="English" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" media="screen" />
+  <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+<div id="wrap">
+  <div id="top"></div>
+  <div id="content">
+
+    <div class="header">
+      <h1>Gene Expression Database</h1>
+      <h2>on Google App Engine</h2>
+    </div>
+
+    <div class="breadcrumbs">
+      <a href="#">Home</a> &middot; {% block pagename %}{% endblock %}
+    </div>
+
+    <div class="middle">
+    {% block middle %}{% endblock %}
+    </div>
+    
+    <div class="right">
+    {% block right %}{% endblock %}
+    </div>
+
+    <div id="clear"></div>
+
+  </div>
+
+  <div id="bottom"></div>
+</div>
+
+<div id="footer">
+  <a href="http://itoshi.tv/">Itoshi NIKAIDO, Ph. D.</a>, dritoshi at gmail dot com
+  <div>
+   <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+  </div>
+  CSS Design by <a href="http://www.minimalistic-design.net">Minimalistic Design</a>
+</div>
+
+</body></html>
