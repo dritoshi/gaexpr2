@@ -76,8 +76,9 @@ class Coexpression(webapp.RequestHandler):
   # def correlation_coefficient(self, target_exprs, subject_exprs):
 
   # mutual information
-  def mutual_information(self, cor):
-    return -1/2 * math.log(1-cor**2)
+  # http://ibisforest.org/index.php?%E7%9B%B8%E9%96%A2%E4%BF%82%E6%95%B0
+  #def mutual_information(self, cor):
+  #  return -1/2 * math.log(1-cor**2)
 
   def get(self):
     # Start of calcation coexpression gene
@@ -118,7 +119,7 @@ class Coexpression(webapp.RequestHandler):
 
         # filtering
         if math.fabs(cor) >= 0.9 and math.fabs(cor) < 1.0:
-          mutual_information = self.mutual_information(cor)
+          #mutual_information = self.mutual_information(cor)
           coexpression_genes.append({'affy_id': subject_gene.affy_id,
                                      'gene_symbol': subject_gene.gene_symbol,
                                      'cor': cor,
