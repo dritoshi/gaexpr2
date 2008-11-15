@@ -4,22 +4,42 @@
 {% block pagename %}Coexpression View &middot; {{ keyword }} {% endblock %}
 
 {% block middle %}
-  <div class="middle"> 
-  <table>
-    <tr><th>Affymetrix ID</th><th>Gene Symbol</th><th>Correlation Coefficient</th></tr>
-    {% for gene in coexpression_genes %}
-      <tr>
-        <td><a href="/?search&keyword={{ gene.affy_id }}">{{ gene.affy_id }}</a></td>
-        <td>{{ gene.gene_symbol }}</td>
-        <td>{{ gene.cor }}</td>
-      </tr>    
-    {% endfor %}      
-  </table>
-  
-  <div><a href="/?keyword={{keyword}}">Back to {{keyword}} page</a></div>
-  <div><a href="/search">Home</a></div>
-  </div>
+  <div class="middle">
+
+    <div id="basic"></div>
+    <script type="text/javascript">{{ json }}</script>
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    coexpression = function() {
+        var myColumnDefs = [
+            {key:"affy_id",     sortable:true, resizeable:true},
+            {key:"gene_symbol", sortable:true, resizeable:true},
+            {key:"cor",         sortable:true, resizeable:true}
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource(coexpression.data);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+        myDataSource.responseSchema = {
+            fields: ["affy_id","gene_symbol","cor"]
+        };
+
+        var myDataTable = new YAHOO.widget.DataTable("basic",
+                myColumnDefs, myDataSource, {caption:""});
+                
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable
+        };
+    }();
+});
+</script>
+    <div><a href="/coexpression?keyword={{keyword}}&mode=json">JSON</a></div>
     
+    <div><a href="/?keyword={{keyword}}">Back to {{keyword}} page</a></div>
+    <div><a href="/search">Home</a></div>
+  </div>
+
 {% endblock %}
 
 {% block right %}

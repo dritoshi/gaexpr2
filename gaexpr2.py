@@ -8,6 +8,8 @@ from google.appengine.ext import db
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
 
+from django.utils import simplejson
+
 class Expression(db.Model):
   affy_id       = db.StringProperty()
   gene_symbol   = db.StringProperty()
@@ -84,6 +86,7 @@ class Coexpression(webapp.RequestHandler):
     # Start of calcation coexpression gene
     # I use the webapp framework to retrieve the keyword
     keyword = self.request.get('keyword')
+    output_mode = self.request.get('mode')
 
     if not keyword:
       result = "No keyword has been set"
@@ -125,10 +128,16 @@ class Coexpression(webapp.RequestHandler):
                                      'cor': cor})
 #                                     'mutual_information': mutual_information})
 
-      template_values = {'coexpression_genes': coexpression_genes,
-                         'keyword': keyword}
-      path = os.path.join(os.path.dirname(__file__), 'coexpression.html')
-      self.response.out.write(template.render(path, template_values))
+      json = "coexpression = { data: " + simplejson.dumps(coexpression_genes, indent=4) + "};"
+      
+      if output_mode == "json":
+        self.response.out.write(json)
+      else:
+        template_values = {'coexpression_genes': coexpression_genes,
+                           'keyword': keyword, 
+                           'json'   : json }
+        path = os.path.join(os.path.dirname(__file__), 'coexpression.html')
+        self.response.out.write(template.render(path, template_values))
 
 
 application = webapp.WSGIApplication(
@@ -136,6 +145,7 @@ application = webapp.WSGIApplication(
                                       ('/search', IdSearchForm),
                                       ('/coexpression', Coexpression)],
                                      debug=True)
+
 
 def main():                                       
   run_wsgi_app(application)
